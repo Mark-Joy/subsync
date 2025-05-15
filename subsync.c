@@ -177,7 +177,7 @@ int main(int argc, char **argv)
 
 	while (--argc && ((**++argv == '-') || (**argv == '+'))) {
 		if (!strcmp(*argv, "-V") || !strcmp(*argv, "--version")) {
-			printf(subsync_version);
+			printf("%s", subsync_version);
 			return 0;
 		} else if (!strcmp(*argv, "-H") || !strcmp(*argv, "--help")) {
 			puts(subsync_help);
@@ -445,6 +445,8 @@ static int utf_readline(FILE *fin, char *buf, int len)
 		in_bytes_left  = strlen(rbuf);
 		out_bytes_left = len;
 		in_buf = (char*)rbuf;
+		// https://stackoverflow.com/questions/14148814/c-using-of-iconv-on-windows-with-mingw-compiler
+		// utf_iconv = iconv_open("UTF-8", "WINDOWS-1251");
 		iconv(utf_iconv, &in_buf, &in_bytes_left, &buf, &out_bytes_left);
 		len -= (int)out_bytes_left;
 		*buf = 0;
@@ -706,20 +708,20 @@ static char *mstostr(time_t ms, int style)
 
 	switch (style) {
 	case 1:		/* ASS */
-		sprintf(buf, "%d:%02d:%02d.%02ld", hh, mm, ss, ms / 10);
+		sprintf(buf, "%d:%02d:%02d.%02lld", hh, mm, ss, ms / 10);
 		break;
 	case 2:
-		sprintf(buf, "%02d:%02d:%02d:%03ld", hh, mm, ss, ms);
+		sprintf(buf, "%02d:%02d:%02d:%03lld", hh, mm, ss, ms);
 		break;
 	case 3:
-		sprintf(buf, "%02d.%02d.%02d.%03ld", hh, mm, ss, ms);
+		sprintf(buf, "%02d.%02d.%02d.%03lld", hh, mm, ss, ms);
 		break;
 	case 4:
-		sprintf(buf, "%02d-%02d-%02d-%03ld", hh, mm, ss, ms);
+		sprintf(buf, "%02d-%02d-%02d-%03lld", hh, mm, ss, ms);
 		break;
 	case 0:		/* SRT */
 	default:
-		sprintf(buf, "%02d:%02d:%02d,%03ld", hh, mm, ss, ms);
+		sprintf(buf, "%02d:%02d:%02d,%03lld", hh, mm, ss, ms);
 		break;
 	}
 	return stmp;
@@ -853,7 +855,7 @@ static int mocker(FILE *fin, char *argv)
 	} else if (!strcmp(argv,  "--mock-lr")) {
 		char	*lrlst[] = { "\xa", "\xa\0", "\xa\0\0\0", "\0\xa", "\0\0\0\xa" };
 		for (n = 0; n < sizeof(lrlst)/sizeof(char*); n++) {
-			printf("LR: %02x (%ld): %s\n", *lrlst[n], sizeof(lrlst[n]),
+			printf("LR: %02x (%lld): %s\n", *lrlst[n], sizeof(lrlst[n]),
 					utf_lr(lrlst[n]) ? "true" : "false");
 		}
 	} else if (!strcmp(argv,  "--mock-readline")) {
@@ -879,7 +881,7 @@ static int help_tools(int argc, char **argv)
 		}
 		ms = arg_offset(argv[1]);
 		ms -= arg_offset(argv[2]);
-		printf("Time difference is %s (%ld ms)\n", mstostr(ms, 0), ms);
+		printf("Time difference is %s (%lld ms)\n", mstostr(ms, 0), ms);
 	} else if (!strncmp(*argv, "--help-divide", 10)) {
 		if (argc < 3) {
 			fprintf(stderr, "Two time stamps required.\n");
@@ -889,9 +891,9 @@ static int help_tools(int argc, char **argv)
 		tmp = (double)ms / (double)arg_offset(argv[2]);
 		printf("Time scale ratio is %f\n", tmp);
 	} else if (!strcmp(*argv, "--help-debug")) {
-		printf("Time Stamp Offset:   %ld\n", tm_offset);
+		printf("Time Stamp Offset:   %lld\n", tm_offset);
 		printf("Time Stamp Scaling:  %f\n", tm_scale);
-		printf("Time Stamp range:    from %ld to %ld\n", tm_range[0], tm_range[1]);
+		printf("Time Stamp range:    from %lld to %lld\n", tm_range[0], tm_range[1]);
 		printf("SRT serial Number:   from %d\n", tm_srtsn);
 		printf("Subtitle chopping:   from %d to %d\n", tm_chop[0], tm_chop[1]);
 	} else if (!strcmp(*argv, "--help-example")) {
@@ -925,7 +927,7 @@ static void test_str_to_ms(void)
 
 	for (i = 0; testbl[i]; i++) {
 		ms = strtoms(testbl[i], &n, &style);
-		printf("%s(%d): %s =%ld\n", testbl[i], n, mstostr(ms, style), ms);
+		printf("%s(%d): %s =%lld\n", testbl[i], n, mstostr(ms, style), ms);
 	}
 }
 
