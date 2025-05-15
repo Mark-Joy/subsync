@@ -42,7 +42,7 @@ struct	ScRate	{
 static	char	bom_overflow[8];		/* [0]: number [1]: contents */
 static	char	bom_user_defined[64];
 static	int	utf_index = -1;
-static	iconv_t	utf_iconv;
+static	iconv_t	utf_iconv = (iconv_t) -1;
 
 static	struct	CodePG	{
 	char	magic[4];
