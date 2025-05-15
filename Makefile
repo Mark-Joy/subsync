@@ -5,7 +5,20 @@ endif
 
 
 all:
-	gcc -Wall -O3 -o subsync subsync.c
+	clang -Wall -liconv -O3 -o subsync subsync.c
+
+clang:
+	clang -Wall -liconv -O3 -o subsync subsync.c
+
+clang-static:
+
+	clang -static -Wall -liconv -O3 -o subsync subsync.c
+
+gcc:
+	gcc -Wall -liconv -O3 -o subsync subsync.c
+
+gcc-static:
+	gcc -static -Wall -liconv -O3 -o subsync subsync.c
 
 clean:
 	rm -f subsync
