@@ -319,7 +319,7 @@ int main(int argc, char **argv)
 
 static int retiming(FILE *fin, FILE *fout)
 {
-	char	buf[4096], *s;
+	char	buf[4096], *s = 0;
 	time_t	ms;
 	int	n, style, srtsn;
 	int	magic = -1;		/* -1: uncertain 0: SRT 1: SSA */
@@ -377,6 +377,11 @@ static int retiming(FILE *fin, FILE *fout)
 		} 
 		/* output rest of things */
 		fputs(s, fout);
+	}
+
+	/* make sure to output everything before closing the output */
+	if (s) {
+		fflush(fout);
 	}
 
 	if (utf_iconv >= 0) {

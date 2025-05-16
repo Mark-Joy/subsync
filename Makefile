@@ -11,7 +11,6 @@ clang:
 	clang -Wall -liconv -O3 -o subsync subsync.c
 
 clang-static:
-
 	clang -static -Wall -liconv -O3 -o subsync subsync.c
 
 gcc:
